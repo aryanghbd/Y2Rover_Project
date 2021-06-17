@@ -297,7 +297,7 @@ void setup() {
 
 void loop() {
   if(millis() > LoopTime) {                           //This loop will run every 4mS
-    digitalWrite(4, HIGH);
+    digitalWrite(4, HIGH);                            //Set Pin 4 High foe Debugging
     sampling();                                       // Sample all of the measurements    
     // The closed loop path has a voltage controller cascaded with a current controller. The voltage controller
     // creates a current demand based upon the voltage error. This demand is saturated to give current limiting.
@@ -329,66 +329,62 @@ void loop() {
     xmm = xmm + (dymm * cos(theta));                  //Calculate change to X coordinate
     ymm = ymm + (dymm * sin(theta));                  //Calculate change to Y coordinate
 
-//    if(PosFlag == 0 && ThetaFlag == 0){
-//      Stationary = 1;
-//    }else{
-//      Stationary = 0;
-//    }
-//    
-//    index = 0;                                        //Read instructions from Serial1
-//    while(Serial1.available()){
-//      Instructions[index] = Serial1.read();
-//      if(Instructions[index] == 252){                 //If the position is requested, do not add to Instructions
-//        RequestFlag = 1;
-//      }else{
-//        index++;
-//      }
-//    }
-//    
-//    if(Instructions[0] == 255){                       //If Instructions[0] = 255, the stop instruction has been called
-//      PosFlag = 0;
-//      ThetaFlag = 0;
-//      startflag = 0;
-//      analogWrite(pwmr, 0);
-//      analogWrite(pwml, 0);
-//    }
-//    
-//    if(Instructions[0] == 253 && Stationary == 1){    //If Instructions[0] = 253 the turn instruction has been called
-//      ThetaFlag = 1;
-//      instang = (Instructions[1] - 120) * 6.283 / 240;
-//    }
-//    
-//    if(Instructions[0] == 254 && Stationary == 1){    //If Instructions[0] = 254, the move forward instruction has been called
-//      PosFlag = 1;
-//      instpos = (Instructions[1] - 120) * 10;
-//    }
-//
-//    if(RequestFlag == 1){                             //If a byte with value 252 is recieved, the rovers coordinates have been requested
-//      ttheta = theta;
-//      if (ttheta > 3.1415){                           //Keep ttheta in the range -pi to pi
-//        ttheta = ttheta - 6.283;
-//      }
-//      if (theta < -3.1415){
-//        theta = theta + 6.283;
-//      }
-//      Serial1.write(int(round(xmm/10) + 127));                      //Send coordinates in cm
-//      Serial1.write(int(round(ymm/10) + 127));
-//      Serial1.write(int((ttheta * 255 / 6.283) + 127));             //Send theta
-//      Serial1.write(int(Stationary));
-//      RequestFlag = 0;
-//    }
-//       
-//    if(ThetaFlag == 1 && PosFlag == 0){                             //If ThetaFlag = 1, the rover should control its angle
-//      anglecontrol(instang);
-//    }
-//    
-//    if(PosFlag == 1 && ThetaFlag == 0){                             //If PosFlag = 1, the rover should control its position
-//      poscontrol(instpos);
-//    }
+    if(PosFlag == 0 && ThetaFlag == 0){
+      Stationary = 1;
+    }else{
+      Stationary = 0;
+    }
     
-    if(ThetaFlag == 1){
-    anglecontrol(-3.14);}
-    Serial.print(String(theta, 10) + " ");
-    digitalWrite(4, LOW);
+    index = 0;                                        //Read instructions from Serial1
+    while(Serial1.available()){
+      Instructions[index] = Serial1.read();
+      if(Instructions[index] == 252){                 //If the position is requested, do not add to Instructions
+        RequestFlag = 1;
+      }else{
+        index++;
+      }
+    }
+    
+    if(Instructions[0] == 255){                       //If Instructions[0] = 255, the stop instruction has been called
+      PosFlag = 0;
+      ThetaFlag = 0;
+      startflag = 0;
+      analogWrite(pwmr, 0);
+      analogWrite(pwml, 0);
+    }
+    
+    if(Instructions[0] == 253 && Stationary == 1){    //If Instructions[0] = 253 the turn instruction has been called
+      ThetaFlag = 1;
+      instang = (Instructions[1] - 120) * 6.283 / 240;
+    }
+    
+    if(Instructions[0] == 254 && Stationary == 1){    //If Instructions[0] = 254, the move forward instruction has been called
+      PosFlag = 1;
+      instpos = (Instructions[1] - 120) * 10;
+    }
+
+    if(RequestFlag == 1){                             //If a byte with value 252 is recieved, the rovers coordinates have been requested
+      ttheta = theta;
+      if (ttheta > 3.1415){                           //Keep ttheta in the range -pi to pi
+        ttheta = ttheta - 6.283;
+      }
+      if (theta < -3.1415){
+        theta = theta + 6.283;
+      }
+      Serial1.write(int(round(xmm/10) + 127));                      //Send coordinates in cm
+      Serial1.write(int(round(ymm/10) + 127));
+      Serial1.write(int((ttheta * 255 / 6.283) + 127));             //Send theta
+      Serial1.write(int(Stationary));
+      RequestFlag = 0;
+    }
+       
+    if(ThetaFlag == 1 && PosFlag == 0){                             //If ThetaFlag = 1, the rover should control its angle
+      anglecontrol(instang);
+    }
+    
+    if(PosFlag == 1 && ThetaFlag == 0){                             //If PosFlag = 1, the rover should control its position
+      poscontrol(instpos);
+    }
+    digitalWrite(4, LOW);                             //Set Pin 4 Low for Debugging
   }
 }  
