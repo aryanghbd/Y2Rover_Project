@@ -24,9 +24,6 @@ class Map extends Component {
 	constructor() {
 		super();
 		this.updateChart = this.updateChart.bind(this);
-		//this.colour = ''
-		//this.objectproximity = ''
-		//this.objectcoordinates  = ''	
 
 		this.state = {
 			currentObstacle: {
@@ -53,7 +50,6 @@ class Map extends Component {
 		this.setState({
 			colour: lastMsg
 		})
-		//console.log('im here')
 		//console.log(this.colour)
 		this.render();
 	  }
@@ -100,19 +96,12 @@ class Map extends Component {
 			}]
 		}
 
-		//console.log(this.state.colour)
-		//console.log(this.state.objectproximity)
-		//console.log(this.state.objectcoordinates)
-		//var x = this.state.colour
-		//var y = this.state.objectcoordinates
-		//var z = this.state.objectproximity
-		
 		return (
 		<div>
 			<CanvasJSChart options = {options}
 				 onRef={ref => this.chart = ref}
 			/>
-			{/*You can get reference to the chart instance as shown above using onRef. This allows you to access all chart properties and methods*/}
+			{/*VISION INTEGRATED*/}
 			{/*<h4>Obstacle coloured: <div>{this.state.colour}</div> Has coordinates: <div>{this.state.objectcoordinates}</div> Distance from Rover: <div>{this.state.objectproximity}</div> </h4>*/}
 		</div>
 		);
