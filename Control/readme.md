@@ -15,7 +15,7 @@
 
 4) Ensure the UART port is selected in Tools/Port.
 
-5) In the serial monitor, ensure the Baud Rate is set to 115200
+5) In the serial monitor, ensure the Baud Rate is set to 115200, replace the SSID, Password, and MQTT based variables at the top with your local network parameters and MQTT Command terminal or other Broker parameters respectively
 
 6) Compile and run the code, it should run on its own in the serial monitor, issue commands from the broker remotely.
 
