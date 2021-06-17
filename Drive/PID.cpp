@@ -20,7 +20,7 @@ float PID::Control(float input, float measout, float dt){
         e_integration = 0;
       }
       
-      float delta_u = kp*(e0-e1) + ki*T*e_integration + kd/T*(e0-2*e1+e2);  //Incremental PID programming. The change to the required output is calcualted and integration occurs by summing changes.
+      float delta_u = kp*(e0-e1) + ki*T*e_integration + kd/T*(e0-2*e1+e2);    //Incremental PID programming. The change to the required output is calcualted and integration occurs by summing changes.
       u0 = u1 + delta_u;                                                      //This time's control output
     
       //Output limitation

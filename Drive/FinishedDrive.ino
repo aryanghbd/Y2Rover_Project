@@ -48,7 +48,7 @@
 #define ADNS3080_SROM_LOAD                          0x60
 #define ADNS3080_PRODUCT_ID_VAL                     0x17
 //MOVEMENT AND POSITION DATA*****************************************************
-double theta = 1.57;                                //Angle the rover is facing
+double theta = 3.14;                                //Angle the rover is facing
 double dtheta = 0;                                  //Change in the rovers angle
 double ttheta = 0;                                  //Theta to be transmitted to control
 double dxmm = 0;                                    //Change in X (mm)
@@ -102,7 +102,7 @@ PID PIDW(-255, 255, 1500, 10, 10);                  //PID object to control angu
 
 //ANGLE PID VALUES*********************************************************************************************
 PID PIDT(-1.2, 1.2, 1, 10, 0);                      //PID object to control theta
-bool ThetaFlag = 0;                                 //Used to decide when to turn
+bool ThetaFlag = 1;                                 //Used to decide when to turn
 double instang = 0;                                 //Instructed angle
 
 //POSITION PID VALUES****************************************************************************************************
@@ -179,10 +179,10 @@ else{
   digitalWrite(DIRR, LOW);
   digitalWrite(DIRL, LOW);
   }
-if(destheta - theta < 0.04 && destheta - theta > -0.04 ){         //Stops when theta is within 1 degree
+if(destheta - theta < 0.04 && destheta - theta > -0.04 ){         //Stops when theta is within 5 degrees
   analogWrite(pwmr, 0);              
   analogWrite(pwml, 0);
-  ThetaFlag = 0;                                                    //Resets instructions
+  ThetaFlag = 0;                                                  //Resets instructions
   PosFlag = 0;
   Instructions[0] = 255;
   }
@@ -227,7 +227,7 @@ void poscontrol(float s){                             //Function to control move
         digitalWrite(DIRL, HIGH);
       }
     }else{
-        contangvel = PIDT.Control(_destheta, theta, dt);
+        contangvel = PIDT.Control(_destheta, theta, dt);          //Correct Angle
         contvel = PIDW.Control(contangvel, angvel, dt);
         analogWrite(pwmr, abs(angvelPID));
         analogWrite(pwml, abs(angvelPID));
@@ -329,62 +329,66 @@ void loop() {
     xmm = xmm + (dymm * cos(theta));                  //Calculate change to X coordinate
     ymm = ymm + (dymm * sin(theta));                  //Calculate change to Y coordinate
 
-    if(PosFlag == 0 && ThetaFlag == 0){
-      Stationary = 1;
-    }else{
-      Stationary = 0;
-    }
+//    if(PosFlag == 0 && ThetaFlag == 0){
+//      Stationary = 1;
+//    }else{
+//      Stationary = 0;
+//    }
+//    
+//    index = 0;                                        //Read instructions from Serial1
+//    while(Serial1.available()){
+//      Instructions[index] = Serial1.read();
+//      if(Instructions[index] == 252){                 //If the position is requested, do not add to Instructions
+//        RequestFlag = 1;
+//      }else{
+//        index++;
+//      }
+//    }
+//    
+//    if(Instructions[0] == 255){                       //If Instructions[0] = 255, the stop instruction has been called
+//      PosFlag = 0;
+//      ThetaFlag = 0;
+//      startflag = 0;
+//      analogWrite(pwmr, 0);
+//      analogWrite(pwml, 0);
+//    }
+//    
+//    if(Instructions[0] == 253 && Stationary == 1){    //If Instructions[0] = 253 the turn instruction has been called
+//      ThetaFlag = 1;
+//      instang = (Instructions[1] - 120) * 6.283 / 240;
+//    }
+//    
+//    if(Instructions[0] == 254 && Stationary == 1){    //If Instructions[0] = 254, the move forward instruction has been called
+//      PosFlag = 1;
+//      instpos = (Instructions[1] - 120) * 10;
+//    }
+//
+//    if(RequestFlag == 1){                             //If a byte with value 252 is recieved, the rovers coordinates have been requested
+//      ttheta = theta;
+//      if (ttheta > 3.1415){                           //Keep ttheta in the range -pi to pi
+//        ttheta = ttheta - 6.283;
+//      }
+//      if (theta < -3.1415){
+//        theta = theta + 6.283;
+//      }
+//      Serial1.write(int(round(xmm/10) + 127));                      //Send coordinates in cm
+//      Serial1.write(int(round(ymm/10) + 127));
+//      Serial1.write(int((ttheta * 255 / 6.283) + 127));             //Send theta
+//      Serial1.write(int(Stationary));
+//      RequestFlag = 0;
+//    }
+//       
+//    if(ThetaFlag == 1 && PosFlag == 0){                             //If ThetaFlag = 1, the rover should control its angle
+//      anglecontrol(instang);
+//    }
+//    
+//    if(PosFlag == 1 && ThetaFlag == 0){                             //If PosFlag = 1, the rover should control its position
+//      poscontrol(instpos);
+//    }
     
-    index = 0;                                        //Read instructions from Serial1
-    while(Serial1.available()){
-      Instructions[index] = Serial1.read();
-      if(Instructions[index] == 252){                 //If the position is requested, do not add to Instructions
-        RequestFlag = 1;
-      }else{
-        index++;
-      }
-    }
-    
-    if(Instructions[0] == 255){                       //If Instructions[0] = 255, the stop instruction has been called
-      PosFlag = 0;
-      ThetaFlag = 0;
-      startflag = 0;
-      analogWrite(pwmr, 0);
-      analogWrite(pwml, 0);
-    }
-    
-    if(Instructions[0] == 253 && Stationary == 1){    //If Instructions[0] = 253 the turn instruction has been called
-      ThetaFlag = 1;
-      instang = (Instructions[1] - 120) * 6.283 / 240;
-    }
-    
-    if(Instructions[0] == 254 && Stationary == 1){    //If Instructions[0] = 254, the move forward instruction has been called
-      PosFlag = 1;
-      instpos = (Instructions[1] - 120) * 10;
-    }
-
-    if(RequestFlag == 1){                             //If a byte with value 252 is recieved, the rovers coordinates have been requested
-      ttheta = theta;
-      if (ttheta > 3.1415){                           //Keep ttheta in the range -pi to pi
-        ttheta = ttheta - 6.283;
-      }
-      if (theta < -3.1415){
-        theta = theta + 6.283;
-      }
-      Serial1.write(int(round(xmm/10) + 127));                      //Send coordinates in cm
-      Serial1.write(int(round(ymm/10) + 127));
-      Serial1.write(int((ttheta * 255 / 6.283) + 127));             //Send theta
-      Serial1.write(int(Stationary));
-      RequestFlag = 0;
-    }
-       
-    if(ThetaFlag == 1 && PosFlag == 0){                             //If ThetaFlag = 1, the rover should control its angle
-      anglecontrol(instang);
-    }
-    
-    if(PosFlag == 1 && ThetaFlag == 0){                             //If PosFlag = 1, the rover should control its position
-      poscontrol(instpos);
-    }
+    if(ThetaFlag == 1){
+    anglecontrol(-3.14);}
+    Serial.print(String(theta, 10) + " ");
     digitalWrite(4, LOW);
   }
 }  
