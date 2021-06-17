@@ -2,8 +2,8 @@
 #include <PubSubClient.h> /* PubSubClient needed for MQTT based API */
 #include <math.h>
 #include <HardwareSerial.h>  /* HardwareSerial needed to assign relavant pins on the board for UART communication */
-const char* ssid = "BT-2RAC9H";
-const char* pass = "R3yPH43r4V6ycJ"; /* Required WiFi PARAMETERS to connect to WiFi */
+const char* ssid = "YOUR SSID";
+const char* pass = "YOUR NETWORK PASSWORD"; /* Required WiFi PARAMETERS to connect to WiFi */
 const char* mqtt_user = "hs2119";
 const char* mqttserver = "18.117.97.5";
 const char* mqtt_pass = "marsrover";
